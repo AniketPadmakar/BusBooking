@@ -98,10 +98,6 @@ router.get("/view-tickets", fetchusers, async (req, res) => {
 
   try {
     const user = await User.findById(userId).populate("ticketsBooked"); // Fetch the user
-     // Check if tickets are found
-     if (!tickets || tickets.length === 0) {
-        return res.status(404).json({ error: "No tickets found for this user" });
-      }
     // if (!user) {
     //     return res.status(404).json({ error: 'User not found' });
     // }
@@ -114,9 +110,9 @@ router.get("/view-tickets", fetchusers, async (req, res) => {
         select: "busName busNumber timing arrivalFrom destination operatorName", // Include extra fields
       });
 
-      // if (!ticket) {
-      //     return res.status(404).json({ error: 'Ticket not found' });
-      // }
+      if (!ticket) {
+          return res.status(404).json({ error: 'Ticket not found' });
+      }
 
       return res.status(200).json({
         message: "Individual ticket fetched successfully",
@@ -132,7 +128,10 @@ router.get("/view-tickets", fetchusers, async (req, res) => {
         select: "busName timing arrivalFrom destination", // Fetch only required fields
       })
       .select("busId seatNumber createdAt"); // Fetch only relevant ticket fields
-
+      // Check if tickets are found
+     if (!tickets || tickets.length === 0) {
+      return res.status(404).json({ error: "No tickets found for this user" });
+    }
     res.status(200).json({
       message: "Tickets fetched successfully",
       tickets,
